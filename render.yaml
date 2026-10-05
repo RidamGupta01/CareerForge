@@ -2,6 +2,7 @@ services:
   - type: web
     name: careerforge-backend
     runtime: node
+    plan: free
     rootDir: server
     buildCommand: npm ci
     startCommand: npm start
