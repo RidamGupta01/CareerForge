@@ -1,18 +1,39 @@
 services:
   - type: web
     name: careerforge-backend
-    env: node
+    runtime: node
     rootDir: server
-    buildCommand: npm install
+    buildCommand: npm ci
     startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
-      # You will need to manually enter your MONGO_URI and JWT_SECRET 
-      # in the Render dashboard after the service is created.
+      - key: CLIENT_URL
+        fromService:
+          name: careerforge-frontend
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
       - key: MONGO_URI
         sync: false
       - key: JWT_SECRET
-        sync: false
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 30d
+
+  - type: web
+    name: careerforge-frontend
+    runtime: static
+    rootDir: client
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: careerforge-backend
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

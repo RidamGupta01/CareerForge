@@ -30,6 +30,7 @@ app.use(cors({
     if (!origin || 
         origin.includes('localhost') || 
         origin.includes('vercel.app') || 
+        origin.includes('onrender.com') ||
         origin.includes('netlify.app') || 
         origin === process.env.CLIENT_URL) {
       callback(null, true);
